@@ -1,43 +1,34 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
 import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post'
+import { PostService } from './post.service'
 
 @Controller('post')
 export class PostController {
-  posts: any[]
-
-  constructor() {
-    this.posts = [
-      { id: 1, content: 'rest' },
-      { id: 2, content: 'rest' },
-      { id: 3, content: 'rest' }
-    ]
-  }
+  constructor(private readonly postService: PostService) {}
 
   @Get()
   async getAll() {
-    return this.posts
+    return this.postService.getAll()
   }
 
   @Post()
   async create(@Body() dto: CreatePostDto) {
-    return [...this.posts, dto]
+    return this.postService.create(dto)
   }
 
   @Get(':id')
   async getById(@Param('id') id: string) {
-    return this.posts.find(p => p.id === Number(id))
+    return this.postService.getById(id)
   }
 
   @Delete(':id')
   async delete(@Param('id') id: string) {
-    return this.posts.filter(p => p.id !== Number(id))
+    return this.postService.delete(id)
   }
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() dto: CreatePostDto) {
-    const post = await this.posts.find(p => p.id === Number(id))
-    post.content = dto.content
-    return post
+    return this.postService.update(id, dto)
   }
 }
